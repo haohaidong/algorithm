@@ -1,0 +1,167 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <stack>
+#include <set>
+#include <queue>
+#include <map>
+
+
+using namespace std;
+
+struct Node{
+
+	int value;
+	Node *left;
+	Node *right;
+
+	Node():left(NULL),right(NULL){}
+};
+
+class Solution {
+public:
+	Node* rebuilt( vector<int> &pre, vector<int> &mid,int pre_start,int pre_end,int mid_start,int mid_end) {
+		
+		if(pre.size() == 0 || mid.size() == 0 )
+			return NULL;
+
+		if(pre_start == pre_end)
+			return NULL;
+
+		Node *root = new Node();
+		root->value = pre[pre_start];
+		
+		int pos;
+		for(int i = mid_start ; i < mid_end ; i++){
+		
+			if(mid[i] == pre[pre_start]){
+				pos = i;
+				break;
+			}
+		}
+		int length = pos - mid_start;
+		root->left  = rebuilt(pre,mid,pre_start+1,pre_start+1+length,mid_start,pos);
+		root->right = rebuilt(pre,mid,pre_start+1+length,pre_end,pos+1,mid_end);
+
+		return root;
+	}
+
+	void inorderTravel(Node *root){
+	
+		if(root == NULL)
+			return ;
+
+		inorderTravel(root->left);
+		cout << root->value << " ";
+		inorderTravel(root->right);
+
+	}
+
+	void preorderTravel(Node *root){
+	
+		if(root == NULL)
+			return ;
+
+		cout << root->value << " ";
+		preorderTravel(root->left);
+		preorderTravel(root->right);
+
+	}
+
+	void braodTravel(Node *root){
+
+		queue<Node*> pque;
+		pque.push(root);
+
+		while(!pque.empty())
+		{
+			Node *front = pque.front();
+			if(front == NULL)
+			{
+				pque.pop();
+				continue;
+			}
+			cout << front->value << ' ';
+			pque.push(front->left);
+			pque.push(front->right);
+			pque.pop();
+		}
+
+	}
+
+	void depTravel(Node *root){
+	
+		if(root == NULL)
+			return ;
+
+		stack<Node*> st;
+		st.push(root);
+		
+
+		while(!st.empty())
+		{ 
+			Node *p = st.top();
+			if(p == NULL)
+			{
+				st.pop();
+				if(st.empty())
+					break;
+				p = st.top();
+				cout << p->value << ' ';
+				st.pop();
+				p = p->right;
+				st.push(p);
+				continue;
+			}
+			while(!p->left)
+			{
+				st.push(p->left);
+				p = p->left;
+			}
+			cout << p->value << ' ';
+			st.pop();
+			p = p->right;
+			st.push(p);
+		}
+	}
+
+};
+
+int main()
+{
+	int pre_arry[8] = {1,2,4,7,3,5,6,8};
+	int mid_arry[8] = {4,7,2,1,5,3,8,6};
+
+	vector<int> pre(&pre_arry[0],&pre_arry[8]);
+	vector<int> mid(&mid_arry[0],&mid_arry[8]);
+
+	//int tmp;
+	//while(cin >> tmp)
+	//	pre.push_back(tmp);
+
+	//cin.clear();
+	//while(cin >> tmp)
+	//	mid.push_back(tmp);
+
+	Solution solu;
+	Node *root = solu.rebuilt(pre,mid,0,pre.size(),0,mid.size());
+
+	cout << "inorderTravel : ";
+	solu.inorderTravel(root);
+	cout << endl;
+
+	cout << "preorderTravel : ";
+	solu.preorderTravel(root);
+	cout << endl;
+
+	cout << "braodTravel : ";
+	solu.braodTravel(root);
+	cout << endl;
+
+	cout << "depTravel : ";
+	solu.depTravel(root);
+	cout << endl;
+	return 0;
+}
