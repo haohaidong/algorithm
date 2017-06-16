@@ -1,0 +1,77 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <stack>
+#include <set>
+#include <queue>
+#include <map>
+
+
+using namespace std;
+
+class Solution {
+public:
+	void mergeSort(vector<int> &nums,int start,int end){
+	
+		if(start == end || start+1 == end)
+			return ;
+		if(start+2 == end)
+		{
+			if(nums[start+1] < nums[start])
+				swap(nums[start],nums[start+1]);
+			return ;
+		}
+
+
+
+		int mid =(start+end)/2;
+		mergeSort(nums,start,mid);
+		mergeSort(nums,mid,end);
+
+		merge(nums,start,mid,end);
+
+	}
+
+	void merge(vector<int> &nums, int start,int mid,int end){
+	
+		vector<int>tmp;
+		int i = start;
+		int j = mid;
+
+		while(i < mid && j < end)
+		{
+			if(nums[i] <= nums[j])
+				tmp.push_back(nums[i++]);
+			else
+				tmp.push_back(nums[j++]);
+		}
+
+		while(j < end)
+			tmp.push_back(nums[j++]);
+		while(i < mid)
+			tmp.push_back(nums[i++]);
+
+		for(int k = start ; k < end ; k++)
+			nums[k] = tmp[k-start];
+	}
+
+};
+
+int main()
+{
+	vector<int> nums;
+
+	int tmp;
+	while(cin >> tmp)
+		nums.push_back(tmp);
+
+	Solution s;
+	s.mergeSort(nums,0,nums.size());
+
+	for(int i = 0 ; i < nums.size() ; i++)
+		cout << nums[i] << ' ';
+	cout << endl;
+	return 0;
+}
